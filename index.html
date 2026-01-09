@@ -15,6 +15,7 @@
     }
     * { box-sizing: border-box; }
     body {
+      scroll-behavior: smooth;
       margin: 0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Ubuntu, Cantarell, 'Helvetica Neue', Arial, 'Noto Sans', 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
       background: radial-gradient(1200px 600px at 10% -10%, #1f2937, transparent), var(--bg);
@@ -25,6 +26,8 @@
     a:hover { text-decoration: underline; }
 
     header {
+      position: relative;
+      overflow: hidden;
       padding: 64px 24px 40px;
       max-width: 1100px;
       margin: 0 auto;
@@ -47,6 +50,7 @@
     .subtitle { color: var(--muted); max-width: 720px; }
 
     nav {
+      transition: background 0.3s ease;
       position: sticky;
       top: 0;
       backdrop-filter: blur(10px);
@@ -138,7 +142,7 @@
 
   <header>
     <span class="badge">Student • Tech & Creatief</span>
-    <h1>Hallo, ik ben Arne </h1>
+    <h1 id="typewriter"></h1>
     <p class="subtitle">
       Ik ben een student met een sterke interesse in technologie, elektronica en ICT. Ik bouw graag dingen zelf,
       experimenteer met code en werk het liefst aan projecten waar creativiteit en techniek samenkomen.
@@ -174,17 +178,17 @@
       <h2>Interesses & vaardigheden</h2>
       <div class="grid-3">
         <div class="card">
-          <h3> Programmeren</h3>
+          <h3>💻 Programmeren</h3>
           <p>HTML, CSS, JavaScript en Python voor school en eigen projecten.</p>
           <span class="pill">Web</span><span class="pill">Python</span><span class="pill">Logica</span>
         </div>
         <div class="card">
-          <h3> Elektronica</h3>
+          <h3>🔌 Elektronica</h3>
           <p>Interesse in hoe hardware werkt en hoe je software met elektronica combineert.</p>
           <span class="pill">Elektronica-ICT</span><span class="pill">Techniek</span>
         </div>
         <div class="card">
-          <h3> Avontuur</h3>
+          <h3>🌍 Avontuur</h3>
           <p>Graag nieuwe dingen ontdekken, reizen en actief bezig zijn.</p>
           <span class="pill">Reizen</span><span class="pill">Outdoor</span>
         </div>
@@ -215,22 +219,40 @@
         Wil je samenwerken of gewoon iets vragen? Je kan me bereiken via:
       </p>
       <ul>
-        <li>E-mail: <em>(arnevandewiele07@gmail.com)</em></li>
+        <li>E-mail: <em>arnevandewiele07@gmail.com</em></li>
+        
       </ul>
     </section>
   </main>
 
   <footer>
-    © <span id="year"></span> Arne Vandewiele
+    © <span id="year"></span> Arne — gebouwd met HTML & CSS
   </footer>
 
   <script>
     // Jaar automatisch invullen
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // Scroll-animaties met IntersectionObserver
+    /* =============================
+       TYPEWRITER EFFECT
+    ============================= */
+    const text = "Hallo, ik ben Arne 👋";
+    const target = document.getElementById('typewriter');
+    let index = 0;
+    function typeWriter() {
+      if (index < text.length) {
+        target.textContent += text.charAt(index);
+        index++;
+        setTimeout(typeWriter, 80);
+      }
+    }
+    typeWriter();
+
+    /* =============================
+       SCROLL ANIMATIES (sections)
+    ============================= */
     const observer = new IntersectionObserver(
-      (entries) => {
+      entries => {
         entries.forEach(entry => {
           if (entry.isIntersecting) {
             entry.target.style.opacity = '1';
@@ -241,16 +263,19 @@
       { threshold: 0.15 }
     );
 
-    document.querySelectorAll('section').forEach(section => {
-      observer.observe(section);
+    document.querySelectorAll('section').forEach(section => observer.observe(section));
+
+    /* =============================
+       PARALLAX ACHTERGROND (header)
+    ============================= */
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY;
+      document.querySelector('header').style.transform = `translateY(${scrolled * 0.3}px)`;
     });
 
-    // Fade-in footer
-    window.addEventListener('load', () => {
-      document.querySelector('footer').style.opacity = '1';
-    });
-
-    // Kleine hover-animatie op cards
+    /* =============================
+       HOVER EFFECT CARDS
+    ============================= */
     document.querySelectorAll('.card').forEach(card => {
       card.addEventListener('mouseenter', () => {
         card.style.transform = 'translateY(-6px)';
@@ -259,6 +284,32 @@
       card.addEventListener('mouseleave', () => {
         card.style.transform = 'translateY(0)';
       });
+    });
+
+    /* =============================
+       ACTIEVE MENU HIGHLIGHT
+    ============================= */
+    const sections = document.querySelectorAll('section');
+    const navLinks = document.querySelectorAll('.nav-inner a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(section => {
+        const sectionTop = section.offsetTop - 120;
+        if (scrollY >= sectionTop) current = section.getAttribute('id');
+      });
+
+      navLinks.forEach(link => {
+        link.style.color = '#e5e7eb';
+        if (link.getAttribute('href') === `#${current}`) {
+          link.style.color = '#38bdf8';
+        }
+      });
+    });
+
+    // Footer fade-in
+    window.addEventListener('load', () => {
+      document.querySelector('footer').style.opacity = '1';
     });
   </script>
 </body>
